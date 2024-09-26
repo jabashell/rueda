@@ -11,6 +11,7 @@ class Conductores(Base):
     nombre = Column(String)
     user = Column(String)
     password = Column(String)
+    hashed_password = Column(String)
 
     # Relación inversa desde TiposViaje
     tipos_viaje_conductor = relationship('TiposViaje', foreign_keys='TiposViaje.pk_id_conductor', back_populates='conductor')
