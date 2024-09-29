@@ -34,7 +34,7 @@ origins = [
     "http://localhost:3000",  # Ejemplo: Si tienes un frontend en React corriendo en el puerto 3000
     "http://localhost:5173",  # Ejemplo: Si tienes un frontend en React corriendo en el puerto 3000
     "http://localhost:8000",
-    "https://tudominio.com"   # Si deseas permitir un dominio en producción
+    "https://rueda-back.vercel.app"   # Si deseas permitir un dominio en producción
 ]
 
 # Añadir el middleware de CORS a la aplicación
