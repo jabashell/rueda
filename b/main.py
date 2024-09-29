@@ -1,6 +1,7 @@
 # main.py
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import joinedload
 from pydantic import BaseModel
@@ -24,6 +25,24 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 app = FastAPI()
+
+# Lista de orígenes permitidos (puedes añadir dominios específicos)
+origins = [
+    "http://localhost",
+    "http://localhost:3000",  # Ejemplo: Si tienes un frontend en React corriendo en el puerto 3000
+    "http://localhost:5173",  # Ejemplo: Si tienes un frontend en React corriendo en el puerto 3000
+    "http://localhost:8000",
+    "https://tudominio.com"   # Si deseas permitir un dominio en producción
+]
+
+# Añadir el middleware de CORS a la aplicación
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Permitir estos orígenes específicos
+    allow_credentials=True,  # Permitir el uso de credenciales (cookies, cabeceras, etc.)
+    allow_methods=["GET", "POST", "PUT", "DELETE"],  # Métodos HTTP permitidos
+    allow_headers=["*"],  # Cabeceras permitidas
+)
 
 # Dependencia de seguridad
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -107,10 +126,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 # Ruta para generar el token
-@app.post("/token", response_model=Token)
+@app.post("/api/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)
-    print (f"User: {user}")
+    if user:
+        print (f"User: {user.user}")
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -119,9 +139,72 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.user}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+# Ruta para comprobar si el token es válido
+
+@app.get("/api/token_status", response_model=schemas.TokenStatus)
+async def check_token_status(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+    except JWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+    return {"status": True}
+
+
+@app.get("/api/grupos/", response_model=List[schemas.Grupo])
+def get_grupos(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        print (payload)
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    groups = db.query(models.Grupos).all()
+
+    return groups
+
+@app.post("/api/viajes", response_model=List[schemas.ListaConductor])
+def read_conductores(data: schemas.GetViajes, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    ultimos_viajes = (
+        db.query(models.Master)
+        .join(models.TiposViaje)
+        .filter(models.TiposViaje.pk_grupo == data.id_grupo)
+        .order_by(models.Master.id.desc())
+        .limit(data.num_entradas)
+        .options(joinedload(models.Master.viaje).joinedload(models.TiposViaje.conductor))  # Cargar conductores
+        .all()
+    )
+    l_ultimos_viajes = []
+    for viaje in ultimos_viajes:
+        data_viaje = {'fecha' : viaje.fecha, 'nombre_conductor': viaje.viaje.conductor.nombre, 'nombre_conductor_mini': viaje.viaje.conductor_mini.nombre}
+        l_ultimos_viajes.append(data_viaje)
+
+    return l_ultimos_viajes
+
 
 # Ruta para obtener información del usuario autenticado
 @app.get("/users/me", response_model=User)
@@ -187,26 +270,9 @@ def read_conductores(token: str = Depends(oauth2_scheme), skip: int = 0, limit: 
 
     return l_ultimos_viajes
 
-@app.get("/grupos/", response_model=List[schemas.Grupo])
-def get_grupos(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        print (payload)
-        if username is None:
-            raise credentials_exception
-    except JWTError:
-        raise credentials_exception
-    groups = db.query(models.Grupos).all()
 
-    return groups
 
-@app.get("/users")
+@app.get("/users", response_model=schemas.Conductores)
 def get_users( db: Session = Depends(get_db)):
     user = db.query(models.Conductores).filter(models.Conductores.user == 'd').first()
     return user

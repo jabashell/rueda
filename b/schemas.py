@@ -9,6 +9,9 @@ class Token(BaseModel):
     access_token: str
     token_type: str
 
+class TokenStatus (BaseModel):
+    status: bool = False
+
 class User(BaseModel):
     username: str
     email: Optional[str] = None
@@ -107,6 +110,10 @@ class MasterBase(BaseModel):
     fecha: datetime
     pk_viaje: int
     notas: Optional[str] = None
+
+class GetViajes(BaseModel):
+    id_grupo: int
+    num_entradas: int
 
 class MasterCreate(MasterBase):
     pass
