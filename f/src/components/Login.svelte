@@ -52,7 +52,7 @@
             showSelectGrupo = true;
             name = f_username;
         } else {
-            alert(data);
+            alert(data.detail);
         }
     }
 </script>
