@@ -12,6 +12,8 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 
+import uvicorn
+
 # Configuración del contexto de la contraseña (usando bcrypt)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -277,3 +279,5 @@ def get_users( db: Session = Depends(get_db)):
     user = db.query(models.Conductores).filter(models.Conductores.user == 'd').first()
     return user
 
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
