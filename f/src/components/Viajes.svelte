@@ -2,6 +2,7 @@
     import { Button } from 'svelte-ux';
     import { onMount } from 'svelte';
     import { readToken, readUser } from '../utils_session.js';
+    import SiguienteConductor from './SiguienteConductor.svelte';
     
     const apiUrl = import.meta.env.VITE_API_URL;
   
@@ -11,7 +12,9 @@
     export let grupo = 0;
     let datos_viajes = [];  // Variable reactiva para guardar los viajes
     let name = readUser() ;
-  
+    let dateValue;
+
+
     onMount (async function viajes() {
         try {
             console.log (({ 'grupo_id' : grupo, 'num_entradas': "3" })            )
@@ -75,6 +78,13 @@
             {/each}
           </tbody>
         </table>
+        <div>
+          <SiguienteConductor {grupo} bind:dateValue />
+          <div class="text-red-500">
+          {dateValue? `La fecha seleccionada es: ${new Date(dateValue).toLocaleDateString()}` : ''}
+          </div>
+        </div>
+
       {/if}
             
   
@@ -82,6 +92,9 @@
   
     <!-- Footer -->
     <footer class="bg-blue-500 text-white p-4 w-full">
+      <div>
+        <Button label="Salir" on:click={() => sessionStorage.clear()} class="bg-black-600">Volver</Button>
+      </div>
       <p>Footer</p>
     </footer>
   </div>

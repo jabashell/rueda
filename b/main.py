@@ -156,7 +156,6 @@ async def check_token_status(token: str = Depends(oauth2_scheme)):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     return {"status": True}
 
-
 @app.get("/api/grupos/", response_model=List[schemas.Grupo])
 def get_grupos(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
@@ -206,6 +205,41 @@ def read_conductores(data: schemas.GetViajes, token: str = Depends(oauth2_scheme
         l_ultimos_viajes.append(data_viaje)
 
     return l_ultimos_viajes
+
+@app.post("/api/siguiente_conductor", response_model=schemas.SiguienteViaje)
+def test(data: schemas.GrupoViaje, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    """ Devuelve el siguiente conductor para un grupo dado. """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    ultimo_viaje_grupo = (
+        db.query(models.Master)
+        .join(models.TiposViaje)
+        .filter(models.TiposViaje.pk_grupo == data.id_grupo)
+        .order_by(models.Master.id.desc())
+        .options(joinedload(models.Master.viaje).joinedload(models.TiposViaje.conductor))  # Cargar conductores
+        .first()
+    )
+
+    siguiente_viaje = db.query(models.TiposViaje).filter(models.TiposViaje.id == ultimo_viaje_grupo.pk_viaje).first()
+    siguiente_conductor_tp = db.query(models.TiposViaje).filter(models.TiposViaje.id == siguiente_viaje.siguiente).first()
+    siguiente_conductor = db.query(models.Conductores).filter(models.Conductores.id == siguiente_conductor_tp.pk_id_conductor).first()
+    
+    return {"id_siguiente_conductor"  : siguiente_viaje.siguiente, "nombre_siguiente_conductor": siguiente_conductor.nombre}
+
+
+
+
 
 
 # Ruta para obtener información del usuario autenticado

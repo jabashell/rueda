@@ -92,6 +92,9 @@ class Grupos(GruposBase):
 class Grupo(GruposBase):
     id: int
 
+class GrupoViaje(BaseModel):
+    id_grupo: int
+
 class TiposViajeBase(BaseModel):
     pk_grupo: int
     pk_id_conductor: int
@@ -114,6 +117,10 @@ class MasterBase(BaseModel):
 class GetViajes(BaseModel):
     id_grupo: int
     num_entradas: int
+    
+class SiguienteViaje(BaseModel):
+    id_siguiente_conductor: int
+    nombre_siguiente_conductor: str
 
 class MasterCreate(MasterBase):
     pass
