@@ -45,7 +45,10 @@
         }
     });
   
-  
+    function handleButton () {
+      sessionStorage.clear(); 
+      location.reload();
+    }
   </script>
   
   <div class="min-h-screen flex flex-col w-full bg-red-100 w-screen lg:max-w-[1024px]">
@@ -93,7 +96,7 @@
     <!-- Footer -->
     <footer class="bg-blue-500 text-white p-4 w-full">
       <div>
-        <Button label="Salir" on:click={() => sessionStorage.clear()} class="bg-black-600">Volver</Button>
+        <Button label="Salir" on:click={handleButton} class="bg-black-600">Logout</Button>
       </div>
       <p>Footer</p>
     </footer>
