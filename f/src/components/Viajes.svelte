@@ -98,7 +98,6 @@
       <div>
         <Button label="Salir" on:click={handleButton} class="bg-black-600">Logout</Button>
       </div>
-      <p>Footer</p>
     </footer>
   </div>
   
