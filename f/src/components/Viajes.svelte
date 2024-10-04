@@ -1,7 +1,7 @@
 <script>
     import { Button } from 'svelte-ux';
     import { onMount } from 'svelte';
-    import { readToken, readUser } from '../utils_session.js';
+    import { readToken, readUser, clearGroup } from '../utils_session.js';
     import SiguienteConductor from './SiguienteConductor.svelte';
     
     const apiUrl = import.meta.env.VITE_API_URL;
@@ -49,6 +49,10 @@
       sessionStorage.clear(); 
       location.reload();
     }
+    function btn_volver () {
+      clearGroup();
+      location.reload();
+    }
   </script>
   
   <div class="min-h-screen flex flex-col w-full bg-red-100 w-screen lg:max-w-[1024px]">
@@ -92,7 +96,10 @@
     </main>
   
     <!-- Footer -->
-    <footer class="bg-blue-500 text-white p-4 w-full">
+    <footer class="flex flex-row justify-evenly bg-blue-500 text-white p-4 w-full">
+      <div>
+        <Button label="Volver" on:click={btn_volver} className="bg-black-600">Volver</Button>
+      </div>
       <div>
         <Button label="Salir" on:click={handleButton} className="bg-black-600">Logout</Button>
       </div>

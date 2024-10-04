@@ -46,11 +46,11 @@
       {#if cargando} 
       Cargando...
       {:else}
-      <div class="mt-8 flex flex-row space-x-reverse justify-center ">
+      <div class="mt-8 flex flex-row space-x-reverse justify-center items-baseline">
       <div class="mr-4">
           Proximo conductor: 
       </div>
-        <div class="">
+        <div class="text-3xl font-bold">
             {datos_conductor.nombre_siguiente_conductor}
         </div>
       </div>
@@ -68,7 +68,7 @@
     </div>
         <div class="flex flex-row mt-4 justify-center space-x-4">
             <div>
-              <button class="bg-blue-400">Asignar Conductor</button>
+              <button on:click={btn_asignar_conductor} class="bg-blue-400 text-blue-100">Asignar Conductor</button>
             </div>
             <div>
               <button class="bg-red-400 text-blue-100">Borrar Día</button>
