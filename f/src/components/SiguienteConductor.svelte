@@ -46,7 +46,7 @@
       {#if cargando} 
       Cargando...
       {:else}
-      <div class="mt-10 flex flex-row space-x-reverse justify-center ">
+      <div class="mt-8 flex flex-row space-x-reverse justify-center ">
       <div class="mr-4">
           Proximo conductor: 
       </div>
@@ -54,17 +54,27 @@
             {datos_conductor.nombre_siguiente_conductor}
         </div>
       </div>
-      <div class="flex justify-center">
+      <div class="flex justify-center mt-4">
         <div class="w-64">
             <DatePickerField
                 bind:value={dateValue}
                 format="dd/MM/yyyy"
                 locale={es}
                 firstDayOfWeek={1}
-                class="bg-white text-black p-2 rounded border border-gray-300"
+                class="bg-white text-black p-2 rounded border border-gray-300 text-xl"
                 />
         </div>
-      </div>
+        
+    </div>
+        <div class="flex flex-row mt-4 justify-center space-x-4">
+            <div>
+              <button class="bg-blue-400">Asignar Conductor</button>
+            </div>
+            <div>
+              <button class="bg-red-400 text-blue-100">Borrar Día</button>
+            </div>
+          
+          </div>
       {/if}
   </div>
       

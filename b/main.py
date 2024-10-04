@@ -194,7 +194,7 @@ def read_conductores(data: schemas.GetViajes, token: str = Depends(oauth2_scheme
         db.query(models.Master)
         .join(models.TiposViaje)
         .filter(models.TiposViaje.pk_grupo == data.id_grupo)
-        .order_by(models.Master.id.desc())
+        .order_by(models.Master.id.asc())
         .limit(data.num_entradas)
         .options(joinedload(models.Master.viaje).joinedload(models.TiposViaje.conductor))  # Cargar conductores
         .all()

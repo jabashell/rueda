@@ -74,18 +74,16 @@
           <tbody>
             {#each datos_viajes as viaje}
             <tr>
-              <td class="border border-gray-500 border px-4 py-2">{viaje.fecha}</td>
-              <td class="border border-gray-500 border px-4 py-2">{viaje.nombre_conductor}</td>
-              <td class="border border-gray-500 border px-4 py-2">{viaje.nombre_conductor_mini}</td>
+              <td class="border border-gray-500 px-4 py-2">{viaje.fecha}</td>
+              <td class="border border-gray-500 px-4 py-2">{viaje.nombre_conductor}</td>
+              <td class="border border-gray-500 px-4 py-2">{viaje.nombre_conductor_mini}</td>
             </tr>
             {/each}
           </tbody>
         </table>
         <div>
           <SiguienteConductor {grupo} bind:dateValue />
-          <div class="text-red-500">
-          {dateValue? `La fecha seleccionada es: ${new Date(dateValue).toLocaleDateString()}` : ''}
-          </div>
+          
         </div>
 
       {/if}
@@ -96,7 +94,7 @@
     <!-- Footer -->
     <footer class="bg-blue-500 text-white p-4 w-full">
       <div>
-        <Button label="Salir" on:click={handleButton} class="bg-black-600">Logout</Button>
+        <Button label="Salir" on:click={handleButton} className="bg-black-600">Logout</Button>
       </div>
     </footer>
   </div>
