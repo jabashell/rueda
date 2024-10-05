@@ -11,6 +11,7 @@ from typing import List, Optional
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+import pytz
 
 import uvicorn
 
@@ -194,20 +195,20 @@ def read_conductores(data: schemas.GetViajes, token: str = Depends(oauth2_scheme
         db.query(models.Master)
         .join(models.TiposViaje)
         .filter(models.TiposViaje.pk_grupo == data.id_grupo)
-        .order_by(models.Master.id.asc())
+        .order_by(models.Master.id.desc())
         .limit(data.num_entradas)
         .options(joinedload(models.Master.viaje).joinedload(models.TiposViaje.conductor))  # Cargar conductores
         .all()
     )
     l_ultimos_viajes = []
-    for viaje in ultimos_viajes:
+    for viaje in ultimos_viajes[::-1]:
         data_viaje = {'fecha' : viaje.fecha, 'nombre_conductor': viaje.viaje.conductor.nombre, 'nombre_conductor_mini': viaje.viaje.conductor_mini.nombre}
         l_ultimos_viajes.append(data_viaje)
 
     return l_ultimos_viajes
 
 @app.post("/api/siguiente_conductor", response_model=schemas.SiguienteViaje)
-def test(data: schemas.GrupoViaje, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+def siguiente_conductor(data: schemas.GrupoViaje, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     """ Devuelve el siguiente conductor para un grupo dado. """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -230,14 +231,46 @@ def test(data: schemas.GrupoViaje, token: str = Depends(oauth2_scheme), db: Sess
         .options(joinedload(models.Master.viaje).joinedload(models.TiposViaje.conductor))  # Cargar conductores
         .first()
     )
-
+    print (f"Ultimo viaje grupo: {ultimo_viaje_grupo.pk_viaje}, conductor: {ultimo_viaje_grupo.viaje.conductor.nombre}")
     siguiente_viaje = db.query(models.TiposViaje).filter(models.TiposViaje.id == ultimo_viaje_grupo.pk_viaje).first()
+    print (f"siguiente viaje: {siguiente_viaje.pk_id_conductor}")
     siguiente_conductor_tp = db.query(models.TiposViaje).filter(models.TiposViaje.id == siguiente_viaje.siguiente).first()
     siguiente_conductor = db.query(models.Conductores).filter(models.Conductores.id == siguiente_conductor_tp.pk_id_conductor).first()
     
     return {"id_siguiente_conductor"  : siguiente_viaje.siguiente, "nombre_siguiente_conductor": siguiente_conductor.nombre}
 
 
+@app.post("/api/asignar_conductor")
+def asignar_conductor(data: schemas.MasterBase, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    """ Devuelve el siguiente conductor para un grupo dado. """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+        # Obtener la fecha que viene en UTC
+    fecha_utc = data.fecha
+
+    # Obtener la fecha que viene en la zona horaria local    # Convertir a la zona horaria local (CET/CEST)
+    zona_horaria = pytz.timezone("Europe/Madrid")
+    data.fecha = fecha_utc.astimezone(zona_horaria)
+
+    # new_master = models.Master(**data.dict())
+    # db.add(new_master)
+    # db.commit()
+    #  print (f"Añadiendo viaje: {new_master.id}")
+
+    print (f"Asignando conductor: {data.fecha} al viaje: {data.pk_viaje}")
+    
+    return {"fecha:" : data.fecha, "pk_viaje": data.pk_viaje}
 
 
 

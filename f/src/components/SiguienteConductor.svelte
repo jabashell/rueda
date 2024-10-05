@@ -39,6 +39,28 @@
             cargando = false;
         }
     });
+
+    function btn_asignar_conductor() {
+        console.log('Asignar conductor a', dateValue, datos_conductor);
+
+       
+        fetch(apiUrl + '/api/asignar_conductor/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": token.token_type + " " + token.access_token
+            },
+            body: JSON.stringify({ 
+                            "fecha": dateValue.toISOString(),
+                            "pk_viaje": datos_conductor.id_siguiente_conductor,
+                            })
+            
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+    }
+
   </script>
   
   

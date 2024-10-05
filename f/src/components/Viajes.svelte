@@ -5,11 +5,12 @@
     import SiguienteConductor from './SiguienteConductor.svelte';
     
     const apiUrl = import.meta.env.VITE_API_URL;
+    export let grupo = 0;
+    export let showSelectGrupo = false;
   
     let data = {};  // Variable reactiva para guardar los datos
     let cargando = true;  // Para mostrar un indicador de carga
     let token = readToken();
-    export let grupo = 0;
     let datos_viajes = [];  // Variable reactiva para guardar los viajes
     let name = readUser() ;
     let dateValue;
@@ -51,7 +52,9 @@
     }
     function btn_volver () {
       clearGroup();
-      location.reload();
+      showSelectGrupo = true;
+      grupo = 0;
+      console.log('Grupo:', grupo, 'showSelectGrupo', showSelectGrupo);
     }
   </script>
   

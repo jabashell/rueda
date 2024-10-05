@@ -8,10 +8,11 @@
   const apiUrl = import.meta.env.VITE_API_URL;
   console.log('API URL', apiUrl);
   let name = '';
-  let showLogin = true;
-  let showSelectGrupo = false;
-  let grupo = 0;
   let token = false
+  $: showLogin = true;
+  $: showSelectGrupo = false;
+  $: grupo = 0;
+  $: console.log ('grupo', grupo);
 
   // Recuperar el token almacenado cuando el componente se carga
   onMount(() => {
@@ -52,8 +53,8 @@
 {/if}
 
 {#if grupo > 0 }
-<div>
-  <Viajes bind:grupo/>
+<div class="text-red-500">
+  <Viajes bind:grupo bind:showSelectGrupo></Viajes>
 </div>
 {/if}
 </main>
