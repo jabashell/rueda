@@ -2,13 +2,22 @@
     import { onMount } from 'svelte';
     import { readToken, readUser } from '../utils_session.js';
     import { DatePickerField } from 'svelte-ux';
+    import { Datefield } from 'svelte-mui';
+    
+    export let grupo;
+    export let dateValue = new Date();
+    
+    let format = 'DD/MM/YYYY';
+    let date = new Date(); // Date
+    const onchange = ({ detail }) => {
+        dateValue = detail
+        console.log('onchange', detail);
+    };
     
     const apiUrl = import.meta.env.VITE_API_URL;
   
     let cargando = true;  // Para mostrar un indicador de carga
     let token = readToken();
-    export let grupo;
-    export let dateValue = new Date();
     let datos_conductor;
     import { es } from 'date-fns/locale'; // Importa el idioma español
   
@@ -77,16 +86,18 @@
         </div>
       </div>
       <div class="flex justify-center mt-4">
-        <div class="w-64">
-            <DatePickerField
-                bind:value={dateValue}
-                format="dd/MM/yyyy"
-                locale={es}
-                firstDayOfWeek={1}
-                class="bg-white text-black p-2 rounded border border-gray-300 text-xl"
-                />
+        <div>
+            <Datefield
+            value={date}
+            readonly=false  
+            {format}
+            message={format}
+            locale="es-ES"
+            icon=true
+            on:date-change={onchange}
+        />
         </div>
-        
+
     </div>
         <div class="flex flex-row mt-4 justify-center space-x-4">
             <div>
