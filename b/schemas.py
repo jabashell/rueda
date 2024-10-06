@@ -129,3 +129,12 @@ class Master(MasterBase):
     id: int
     class Config:
         from_attributes = True
+
+class DataE (BaseModel):
+    fecha: datetime
+    grupo: str
+    conductor: str
+
+class DataExiste(BaseModel):
+    existe : bool
+    data : Optional[DataE] = None    

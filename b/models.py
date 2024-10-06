@@ -38,6 +38,7 @@ class TiposViaje(Base):
     conductor = relationship('Conductores', foreign_keys=[pk_id_conductor], back_populates='tipos_viaje_conductor')
     conductor_mini = relationship('Conductores', foreign_keys=[pk_id_conductor_mini], back_populates='tipos_viaje_conductor_mini')
 
+    grupo = relationship ('Grupos', foreign_keys=[pk_grupo])
     # Definir relación con Master
     master = relationship('Master', back_populates='viaje')
 

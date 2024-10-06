@@ -3,6 +3,7 @@
     import { readToken, readUser } from '../utils_session.js';
     import { DatePickerField } from 'svelte-ux';
     import { Datefield } from 'svelte-mui';
+    import MostrarModal from './MostrarModal.svelte';
     
     export let grupo;
     export let dateValue = new Date();
@@ -13,13 +14,15 @@
         dateValue = detail
         console.log('onchange', detail);
     };
+    let data;
     
     const apiUrl = import.meta.env.VITE_API_URL;
   
     let cargando = true;  // Para mostrar un indicador de carga
     let token = readToken();
     let datos_conductor;
-    import { es } from 'date-fns/locale'; // Importa el idioma español
+
+    let open = false
   
     onMount (async function getSiguienteConductor() {
         try {
@@ -49,11 +52,13 @@
         }
     });
 
-    function btn_asignar_conductor() {
-        console.log('Asignar conductor a', dateValue, datos_conductor);
 
-       
-        fetch(apiUrl + '/api/asignar_conductor/', {
+
+    function btn_asignar_conductor() {
+        /* 
+        1.- Comprobar que en ese día no hay ningun conductor asignado
+        */
+        fetch(apiUrl + '/api/comprobar_fecha/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -66,8 +71,43 @@
             
         })
         .then(response => response.json())
-        .then(data => console.log(data))
+        .then(data => {
+            console.log('Comprobar fecha: ', data)
+            /*
+            2.- Si hay conductor asignado informar
+            */
+            if (data.existe) {
+                /* Mostrar modal con los datos */
+                open= false; 
+                open= true;
+
+            }
+    
+        })
         .catch(error => console.error('Error:', error));
+
+        
+        /*
+        3.- Si no hay conductor asignado, entonces asignar
+        */
+        console.log('Asignar conductor a', dateValue, datos_conductor);
+
+       
+        // fetch(apiUrl + '/api/asignar_conductor/', {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         "Authorization": token.token_type + " " + token.access_token
+        //     },
+        //     body: JSON.stringify({ 
+        //                     "fecha": dateValue.toISOString(),
+        //                     "pk_viaje": datos_conductor.id_siguiente_conductor,
+        //                     })
+            
+        // })
+        // .then(response => response.json())
+        // .then(data => console.log(data))
+        // .catch(error => console.error('Error:', error));
     }
 
   </script>
@@ -109,8 +149,12 @@
           
           </div>
       {/if}
+
+      <MostrarModal/>   
   </div>
-      
+  <div>
+    Visible -> {open}
+  </div>
   
   
   

@@ -4,6 +4,7 @@
   import Login from './components/Login.svelte';
   import SelectGroup from "./components/SelectGroup.svelte";
   import Viajes from './components/Viajes.svelte';
+  import TestFecha from "./components/Test_Fecha.svelte";
   
   const apiUrl = import.meta.env.VITE_API_URL;
   console.log('API URL', apiUrl);
@@ -58,6 +59,7 @@
 </div>
 {/if}
 </main>
+
 
 
 <style>
