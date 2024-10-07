@@ -292,21 +292,13 @@ def asignar_conductor(data: schemas.MasterBase, token: str = Depends(oauth2_sche
     except JWTError:
         raise credentials_exception
 
-        # Obtener la fecha que viene en UTC
-    fecha_utc = data.fecha
-
-    print ("hasta aqui llego")
-
     # Obtener la fecha que viene en la zona horaria local    # Convertir a la zona horaria local (CET/CEST)
-    zona_horaria = pytz.timezone("Europe/Madrid")
-    data.fecha = fecha_utc.astimezone(zona_horaria)
+    # Como no consigo que la hora este correcto y pierdo 1 día al hacer el commit, le sumo 2 horas
+    data.fecha += timedelta(hours=2)
 
     new_master = models.Master(**data.dict())
     db.add(new_master)
     db.commit()
-    print (f"Añadiendo viaje: {new_master.id}")
-
-    print (f"Asignando conductor: {data.fecha} al viaje: {data.pk_viaje}")
     
     return {"fecha" : data.fecha, "pk_viaje": data.pk_viaje}
 

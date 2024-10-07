@@ -3,7 +3,6 @@
     import { onMount } from 'svelte';
     import { readToken, readUser, clearGroup } from '../utils_session.js';
     import SiguienteConductor from './SiguienteConductor.svelte';
-    import MostrarModal from './MostrarModal.svelte';
     
     const apiUrl = import.meta.env.VITE_API_URL;
     export let grupo = 0;
