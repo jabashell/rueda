@@ -3,6 +3,7 @@
     import { onMount } from 'svelte';
     import { readToken, readUser, clearGroup } from '../utils_session.js';
     import SiguienteConductor from './SiguienteConductor.svelte';
+    import MostrarModal from './MostrarModal.svelte';
     
     const apiUrl = import.meta.env.VITE_API_URL;
     export let grupo = 0;
@@ -58,7 +59,7 @@
     }
   </script>
   
-  <div class="min-h-screen flex flex-col w-full bg-red-100 w-screen lg:max-w-[1024px]">
+  <div class="min-h-screen flex flex-col bg-red-100 w-screen lg:max-w-[1024px]">
     <!-- Header -->
     <header class="bg-blue-500 text-white p-4 w-full">
       <h1 class="text-xl">{name}</h1>

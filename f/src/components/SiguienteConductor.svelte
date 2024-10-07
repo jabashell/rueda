@@ -53,21 +53,23 @@
     });
 
 
-
+    let isDialogOpen = false;  // Estado del diálogo
+    let dialogTitle = "Día ya asignado";
+    let dialogContent = "";
     function btn_asignar_conductor() {
         /* 
         1.- Comprobar que en ese día no hay ningun conductor asignado
         */
+        const datos_viaje = { "fecha": dateValue.toISOString(),
+                              "pk_viaje": datos_conductor.id_siguiente_conductor,
+                            }
         fetch(apiUrl + '/api/comprobar_fecha/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 "Authorization": token.token_type + " " + token.access_token
             },
-            body: JSON.stringify({ 
-                            "fecha": dateValue.toISOString(),
-                            "pk_viaje": datos_conductor.id_siguiente_conductor,
-                            })
+            body: JSON.stringify(datos_viaje)
             
         })
         .then(response => response.json())
@@ -78,11 +80,18 @@
             */
             if (data.existe) {
                 /* Mostrar modal con los datos */
-                open= false; 
-                open= true;
+                isDialogOpen = true;
+                const fecha_str = data.data.fecha.substring(0, 10);  // Convertir fecha a string
+                const conductor_str = data.data.conductor;
+                const grupo_str = data.data.grupo;
+                dialogContent =  "El día " + fecha_str + " esta asignado a " + conductor_str + " del grupo " + grupo_str;
 
-            }
-    
+            } else {
+                /* El día esta libre por tanto lo puedo asignar */
+                console.log ('datos viaje -> ', datos_viaje)
+                asignar_conductor (datos_viaje)
+
+            }    
         })
         .catch(error => console.error('Error:', error));
 
@@ -91,24 +100,40 @@
         3.- Si no hay conductor asignado, entonces asignar
         */
         console.log('Asignar conductor a', dateValue, datos_conductor);
-
-       
-        // fetch(apiUrl + '/api/asignar_conductor/', {
-        //     method: 'POST',
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         "Authorization": token.token_type + " " + token.access_token
-        //     },
-        //     body: JSON.stringify({ 
-        //                     "fecha": dateValue.toISOString(),
-        //                     "pk_viaje": datos_conductor.id_siguiente_conductor,
-        //                     })
-            
-        // })
-        // .then(response => response.json())
-        // .then(data => console.log(data))
-        // .catch(error => console.error('Error:', error));
     }
+
+    function asignar_conductor(datos_viaje) {
+       
+        fetch(apiUrl + '/api/asignar_conductor/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": token.token_type + " " + token.access_token
+            },
+            body: JSON.stringify(datos_viaje)
+            
+        })
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(error => console.error('Error:', error));
+    }
+    
+
+      // Acción cuando se confirma la eliminación
+    const handleDelete = () => {
+        const datos_viaje = { "fecha": dateValue.toISOString(),
+                              "pk_viaje": datos_conductor.id_siguiente_conductor,
+                            }
+        console.log("Item deleted!");
+        asignar_conductor (datos_viaje);
+        isDialogOpen = false;  // Cerrar el diálogo después de la acción
+    };
+
+    // Cerrar el diálogo
+    const closeDialog = () => {
+        isDialogOpen = false;
+    };
+
 
   </script>
   
@@ -150,11 +175,18 @@
           </div>
       {/if}
 
-      <MostrarModal/>   
+    <!-- Componente de diálogo con control externo -->
+      <MostrarModal 
+      open={isDialogOpen}     
+      onClose={closeDialog}    
+      onConfirm={handleDelete} 
+      dialogTitle={dialogTitle}   
+      dialogContent={dialogContent}
+      persistent=true
+      messageConfirm="Reasignar"
+    />
   </div>
-  <div>
-    Visible -> {open}
-  </div>
+
   
   
   
