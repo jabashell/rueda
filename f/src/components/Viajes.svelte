@@ -3,6 +3,7 @@
     import { onMount } from 'svelte';
     import { readToken, readUser, clearGroup } from '../utils_session.js';
     import SiguienteConductor from './SiguienteConductor.svelte';
+    import TablaViajes from './TablaViajes.svelte';
     
     const apiUrl = import.meta.env.VITE_API_URL;
     export let grupo = 0;
@@ -56,6 +57,15 @@
       grupo = 0;
       console.log('Grupo:', grupo, 'showSelectGrupo', showSelectGrupo);
     }
+    function handleCustomEvent(event) {
+      console.log(event.detail.message); // 'Hola desde el hijo!'
+      cargando = true;
+      console.log ('Cargando:', cargando);
+      setTimeout(() => {
+        cargando = false;
+        console.log ('ReCargando:', cargando);
+      }, 10);
+    }
   </script>
   
   <div class="min-h-screen flex flex-col bg-red-100 w-screen lg:max-w-[1024px]">
@@ -69,33 +79,15 @@
       {#if cargando} 
       Cargando...
       {:else}
-
-        <table class="border border-gray-500 table-auto w-full text-blue-500 text-xl">
-          <thead>
-            <tr>
-              <th class="border border-gray-500 px-4 py-2">Fecha</th>
-              <th class="border border-gray-500 px-4 py-2">Conductor</th>
-              <th class="border border-gray-500 px-4 py-2">Mini</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#each datos_viajes as viaje}
-            <tr>
-              <td class="border border-gray-500 px-4 py-2">{viaje.fecha}</td>
-              <td class="border border-gray-500 px-4 py-2">{viaje.nombre_conductor}</td>
-              <td class="border border-gray-500 px-4 py-2">{viaje.nombre_conductor_mini}</td>
-            </tr>
-            {/each}
-          </tbody>
-        </table>
         <div>
-          <SiguienteConductor {grupo} bind:dateValue />
-          
+          <TablaViajes {grupo} />
+        </div>
+        <div>
+          <SiguienteConductor {grupo} bind:dateValue bind:cargando_ext={cargando} on:renderEvent={handleCustomEvent} />
         </div>
 
       {/if}
             
-  
     </main>
   
     <!-- Footer -->

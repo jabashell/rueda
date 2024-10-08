@@ -6,6 +6,7 @@
     import MostrarModal from './MostrarModal.svelte';
     
     export let grupo;
+    export let cargando_ext = false;
     export let dateValue = new Date();
     
     let format = 'DD/MM/YYYY';
@@ -16,6 +17,17 @@
     };
     let data;
     
+
+    import { createEventDispatcher } from 'svelte';
+
+    const dispatch = createEventDispatcher();
+
+    function handleRender() {
+        console.log('Handle render');
+        dispatch('renderEvent', { message: 'Renderiza' });
+    }
+
+
     const apiUrl = import.meta.env.VITE_API_URL;
   
     let cargando = true;  // Para mostrar un indicador de carga
@@ -89,7 +101,9 @@
             } else {
                 /* El día esta libre por tanto lo puedo asignar */
                 console.log ('datos viaje -> ', datos_viaje)
+            
                 asignar_conductor (datos_viaje)
+                handleRender ();
 
             }    
         })
@@ -103,6 +117,7 @@
     }
 
     function asignar_conductor(datos_viaje) {
+        cargando_ext = true;
        
         fetch(apiUrl + '/api/asignar_conductor/', {
             method: 'POST',
@@ -116,6 +131,7 @@
         .then(response => response.json())
         .then(data => console.log(data))
         .catch(error => console.error('Error:', error));
+        cargando_ext = false;
     }
     
 
@@ -133,6 +149,8 @@
     const closeDialog = () => {
         isDialogOpen = false;
     };
+
+
 
 
   </script>
