@@ -303,31 +303,30 @@ def asignar_conductor(data: schemas.MasterBase, token: str = Depends(oauth2_sche
     return {"fecha" : data.fecha, "pk_viaje": data.pk_viaje}
 
 
-@app.post("/api/test")
-async def test (data: schemas.MasterBase, db: Session = Depends(get_db)):
-    fecha_utc = data.fecha
-
-    # Obtener la fecha que viene en la zona horaria local    # Convertir a la zona horaria local (CET/CEST)
-    zona_horaria = pytz.timezone("Europe/Madrid")
-    data.fecha = fecha_utc.astimezone(zona_horaria)
+@app.post("/api/borrar_fecha")
+async def test (data: schemas.Fecha, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    # Buscar el registro con la fecha específica
+    record = db.query(models.Master).filter(models.Master.fecha == data.fecha).first()
     
-    data_existe = db.query(models.Master).filter(models.Master.fecha == fecha_utc).first()
-    if data_existe:
-        existe = {'existe': True}
-        existe ['data'] = {}
-        existe ["data"] ["fecha"] = data_existe.fecha
-        existe ["data"] ["grupo"] = data_existe.viaje.grupo.descripcion
-        existe ["data"] ["conductor"] = data_existe.viaje.conductor.nombre
-    else:
-        existe = {'existe': False}
+    if not record:
+        raise HTTPException(status_code=404, detail="Fecha no encontrada")
 
-    # new_master = models.Master(**data.dict())
-    # db.add(new_master)
-    # db.commit()
-    #  print (f"Añadiendo viaje: {new_master.id}")
-
-    
-    return existe
+    # Eliminar el registro
+    db.delete(record)
+    db.commit()
+    return {"detail" : "Fecha eliminada con éxito"}
 
 
 # Ruta para obtener información del usuario autenticado

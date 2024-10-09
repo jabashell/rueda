@@ -45,7 +45,7 @@ class TiposViaje(Base):
 class Master(Base):
     __tablename__ = 'master'
     id = Column(Integer, primary_key=True, autoincrement=True)
-    fecha = Column(DateTime)
+    fecha = Column(DateTime, index=True)
     pk_viaje = Column(Integer, ForeignKey('tipos_viaje.id'))
     notas = Column(String)
 

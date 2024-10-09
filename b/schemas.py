@@ -137,4 +137,7 @@ class DataE (BaseModel):
 
 class DataExiste(BaseModel):
     existe : bool
-    data : Optional[DataE] = None    
+    data : Optional[DataE] = None
+
+class Fecha(BaseModel):
+    fecha: datetime
