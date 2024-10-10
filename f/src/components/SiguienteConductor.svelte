@@ -23,7 +23,6 @@
     const dispatch = createEventDispatcher();
 
     function handleRender() {
-        console.log('Handle render');
         dispatch('renderEvent', { message: 'Renderiza' });
     }
 
@@ -151,6 +150,29 @@
     };
 
 
+    function btn_borrar_dia() {
+        /* 
+        1.- Comprobar que en ese día no hay ningun conductor asignado
+        */
+        const datos_dia = { "fecha": dateValue.toISOString(),
+                            }
+        fetch(apiUrl + '/api/borrar_dia/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": token.token_type + " " + token.access_token
+            },
+            body: JSON.stringify(datos_dia)
+            
+        })
+        .then(response => response.json())
+        .then(data => {
+            setTimeout(handleRender, 100);
+
+            console.log('Resultado del borrado: ', data)
+        })
+        .catch(error => console.error('Error:', error));
+    }
 
 
   </script>
@@ -187,7 +209,7 @@
               <button on:click={btn_asignar_conductor} class="bg-blue-400 text-blue-100">Asignar Conductor</button>
             </div>
             <div>
-              <button class="bg-red-400 text-blue-100">Borrar Día</button>
+              <button on:click={btn_borrar_dia} class="bg-red-400 text-blue-100">Borrar Día</button>
             </div>
           
           </div>

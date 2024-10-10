@@ -303,8 +303,8 @@ def asignar_conductor(data: schemas.MasterBase, token: str = Depends(oauth2_sche
     return {"fecha" : data.fecha, "pk_viaje": data.pk_viaje}
 
 
-@app.post("/api/borrar_fecha")
-async def test (data: schemas.Fecha, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+@app.post("/api/borrar_dia")
+async def borrar_dia (data: schemas.Fecha, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -318,7 +318,9 @@ async def test (data: schemas.Fecha, token: str = Depends(oauth2_scheme), db: Se
     except JWTError:
         raise credentials_exception
     # Buscar el registro con la fecha específica
-    record = db.query(models.Master).filter(models.Master.fecha == data.fecha).first()
+    data.fecha += timedelta(hours=2)
+    print ("Borrando dia:", data.fecha.date())
+    record = db.query(models.Master).filter(models.Master.fecha == data.fecha.date()).first()
     
     if not record:
         raise HTTPException(status_code=404, detail="Fecha no encontrada")
