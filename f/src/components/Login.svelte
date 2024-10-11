@@ -9,6 +9,7 @@
     const apiUrl = import.meta.env.VITE_API_URL;
     let user = '';
     let password = '';
+    let showMessageLogin = true;
 
     onMount(() => {
         // Comprobar el token de sesión
@@ -30,7 +31,8 @@
         const f_username = user;
         const f_password = password;
 
-        console.log('username: ', f_username, 'password: ', f_password);
+        showMessageLogin = false;
+        console.log('LOGIN - username: ', f_username, 'password: ', f_password, 'showMessageLogin', showMessageLogin);
 
         // Crear el cuerpo codificado con URLSearchParams
         const formBody = new FormData();
@@ -42,20 +44,26 @@
             credentials: 'include',  // Permite incluir cookies en la solicitud
             body: formBody  // Pasar el cuerpo codificado
         });
+
         const data = await response.json();
         saveToken (data);
         saveUser (f_username);
         console.log('data: ', data);
 
+        showMessageLogin = false;
         if (response.ok) {
             showLogin = false;
             showSelectGrupo = true;
             name = f_username;
         } else {
             alert(data.detail);
+            showLogin = true;
+            showMessageLogin = true;
+            
         }
     }
 </script>
+{#if showMessageLogin}
 <form on:submit|preventDefault={login}>
     <div>
         <div class="grid grid-flow-cols gap-2 text-lg">
@@ -71,3 +79,12 @@
         </div>
     </div>
 </form>
+{:else}
+<div class="text-center text-blue-600 text-3xl">
+    Iniciando Sesion ...
+</div>
+{/if}
+
+<style>
+
+</style>
