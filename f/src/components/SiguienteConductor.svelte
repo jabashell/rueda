@@ -17,6 +17,7 @@
     };
     let data;
     
+    let showButtons = true;
 
     import { createEventDispatcher } from 'svelte';
 
@@ -68,6 +69,7 @@
     let dialogTitle = "Día ya asignado";
     let dialogContent = "";
     function btn_asignar_conductor() {
+        cargando = true;
         /* 
         1.- Comprobar que en ese día no hay ningun conductor asignado
         */
@@ -147,10 +149,13 @@
     // Cerrar el diálogo
     const closeDialog = () => {
         isDialogOpen = false;
+        cargando = false;
     };
 
 
     function btn_borrar_dia() {
+        cargando = true;
+        console.log('cargando', cargando);
         /* 
         1.- Comprobar que en ese día no hay ningun conductor asignado
         */
@@ -180,7 +185,9 @@
   
   <div class="text-blue-500 text-2xl">
       {#if cargando} 
-      Cargando...
+      <div class="mt-10">
+          Cargando...
+      </div>
       {:else}
       <div class="mt-8 flex flex-row space-x-reverse justify-center items-baseline">
       <div class="mr-4">
