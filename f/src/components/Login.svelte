@@ -63,6 +63,9 @@
         }
     }
 </script>
+<div class="m-5">
+    <img src="favicon512.png" alt="Logo" class="w-16 h-16 m-auto">
+</div>
 {#if showMessageLogin}
 <form on:submit|preventDefault={login}>
     <div>
