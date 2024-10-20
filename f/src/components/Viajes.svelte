@@ -1,4 +1,5 @@
 <script>
+    import { Toggle, Dialog, TextField } from 'svelte-ux';
     import { Button } from 'svelte-ux';
     import { onMount } from 'svelte';
     import { readToken, readUser, clearGroup } from '../utils_session.js';
@@ -15,7 +16,9 @@
     let datos_viajes = [];  // Variable reactiva para guardar los viajes
     let name = readUser() ;
     let dateValue;
+    let viajeSeleccionado = null; // Almacena el viaje seleccionado
     let showSiguienteConductor = true;
+    let notas = ''; // Almacena las notas del viaje
 
 
     onMount (async function viajes() {
@@ -92,6 +95,13 @@
       console.log(event.detail.message); // 'Hola desde el hijo!'
       setTimeout (recargaViaje, 1000);
     }
+
+        // Función para mostrar un mensaje al hacer click en una fila
+    function mostrarMensaje(viaje, toggle) {
+      viajeSeleccionado = viaje;
+      toggle ();
+    }
+
   </script>
   
   <div class="min-h-screen flex flex-col bg-red-100 w-screen lg:max-w-[1024px]">
@@ -106,6 +116,7 @@
       Cargando...
       {:else}
         <div>
+          <Toggle let:toggle let:toggleOff let:on={open}>
           <table class="border border-gray-500 table-auto w-full text-blue-500 text-xl">
             <thead>
               <tr>
@@ -116,7 +127,7 @@
             </thead>
             <tbody>
               {#each datos_viajes as viaje (viaje.fecha)}
-              <tr>
+              <tr on:click={() => mostrarMensaje(viaje, toggle)}>
                 <td class="border border-gray-500 px-4 py-2">{viaje.fecha}</td>
                 <td class="border border-gray-500 px-4 py-2">{viaje.nombre_conductor}</td>
                 <td class="border border-gray-500 px-4 py-2">{viaje.nombre_conductor_mini}</td>
@@ -124,6 +135,26 @@
               {/each}
             </tbody>
           </table>
+
+            <Dialog {open} on:close={toggleOff}>
+              <div slot="title">Notas del Viaje</div>
+              <div class="p-2">
+                {#if viajeSeleccionado}
+                  <p><strong>Fecha:</strong> {viajeSeleccionado.fecha}</p>
+                  <p><strong>Conductor:</strong> {viajeSeleccionado.nombre_conductor}</p>
+                  <div class="p-2">
+                    <TextField label="Notas" multiline autofocus bind:value={notas} />
+                  </div>
+                {/if}
+              </div>
+              <div slot="actions">
+                <Button variant="fill" color="primary" on:click={toggleOff}>OK</Button>
+                <Button on:click={toggleOff}>Cancel</Button>
+              </div>
+            </Dialog>
+          </Toggle>
+
+
         </div>
         <div>
           {#if showSiguienteConductor}
@@ -146,6 +177,6 @@
     </footer>
   </div>
   
-  <style>
-    
-  </style>
+<style>
+
+</style>
