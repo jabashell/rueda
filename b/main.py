@@ -334,6 +334,36 @@ async def borrar_dia (data: schemas.Fecha, token: str = Depends(oauth2_scheme), 
     return {"detail" : "Fecha eliminada con éxito"}
 
 
+@app.post("/api/actualizar_notas")
+async def actualizar_notas (data: schemas.FechaNota, token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    # Buscar el registro con la fecha específica
+    data.fecha += timedelta(hours=2)
+    print ("Actualizando Nota:", data.fecha.date())
+    # Buscar el registro en la tabla 'Master' con la fecha específica
+   
+    record = db.query(models.Master).filter(models.Master.fecha == data.fecha.date()).first()
+    
+    if not record:
+        raise HTTPException(status_code=404, detail="Fecha no encontrada")
+
+    # Actualizar la notas del registro
+    record.notas = data.notas_viaje
+    db.commit()
+    return {"detail" : "Nota actualizada con éxito"}
+
+
 # Ruta para obtener información del usuario autenticado
 @app.get("/users/me", response_model=User)
 async def read_users_me(token: str = Depends(oauth2_scheme)):

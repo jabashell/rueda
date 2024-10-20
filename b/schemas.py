@@ -46,6 +46,11 @@ class ListaConductor(BaseModel):
 
         from_attributes = True
 
+class FechaNota(BaseModel):
+    fecha : datetime
+    notas_viaje: Optional[str] = ""
+
+
 # Esquema del viaje para incluir conductor y datos adicionales relevantes
 class Viaje(BaseModel):
     conductor: Optional[Conductor]

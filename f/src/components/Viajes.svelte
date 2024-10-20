@@ -103,6 +103,7 @@
     }
     function actualizarViaje(viajeSeleccionado, toggleOff){
       console.log('Actualizando viaje:', viajeSeleccionado);
+      // TODO : Actualizar el viaje en el backend y actualizar los datos en la variable datos_viajes
       toggleOff();
     }
 
@@ -140,7 +141,7 @@
             </tbody>
           </table>
 
-            <Dialog {open} on:close={toggleOff}>
+            <Dialog {open} on:close={toggleOff} persistent>
               <div slot="title">Notas del Viaje</div>
               <div class="p-2">
                 {#if viajeSeleccionado}
