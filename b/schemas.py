@@ -36,6 +36,7 @@ class ListaConductor(BaseModel):
     fecha: datetime
     nombre_conductor: str
     nombre_conductor_mini: str
+    notas_viaje: Optional [str] = ""
 
    # Configuración de Pydantic para convertir `datetime.date` a string `YYYY-MM-DD`
     class Config:

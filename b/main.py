@@ -189,7 +189,10 @@ def read_conductores(data: schemas.GetViajes, token: str = Depends(oauth2_scheme
     )
     l_ultimos_viajes = []
     for viaje in ultimos_viajes[::-1]:
-        data_viaje = {'fecha' : viaje.fecha, 'nombre_conductor': viaje.viaje.conductor.nombre, 'nombre_conductor_mini': viaje.viaje.conductor_mini.nombre}
+        data_viaje = {  'fecha' : viaje.fecha, 
+                        'nombre_conductor': viaje.viaje.conductor.nombre, 
+                        'nombre_conductor_mini': viaje.viaje.conductor_mini.nombre,
+                        'notas_viaje': viaje.notas,}
         l_ultimos_viajes.append(data_viaje)
 
     return l_ultimos_viajes

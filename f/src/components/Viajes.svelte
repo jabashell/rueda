@@ -101,6 +101,10 @@
       viajeSeleccionado = viaje;
       toggle ();
     }
+    function actualizarViaje(viajeSeleccionado, toggleOff){
+      console.log('Actualizando viaje:', viajeSeleccionado);
+      toggleOff();
+    }
 
   </script>
   
@@ -143,12 +147,12 @@
                   <p><strong>Fecha:</strong> {viajeSeleccionado.fecha}</p>
                   <p><strong>Conductor:</strong> {viajeSeleccionado.nombre_conductor}</p>
                   <div class="p-2">
-                    <TextField label="Notas" multiline autofocus bind:value={notas} />
+                    <TextField label="Notas" multiline autofocus bind:value={viajeSeleccionado.notas_viaje} />
                   </div>
                 {/if}
               </div>
               <div slot="actions">
-                <Button variant="fill" color="primary" on:click={toggleOff}>OK</Button>
+                <Button variant="fill" color="primary" on:click={() => actualizarViaje(viajeSeleccionado, toggleOff)}>OK</Button>
                 <Button on:click={toggleOff}>Cancel</Button>
               </div>
             </Dialog>
