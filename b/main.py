@@ -93,14 +93,11 @@ async def ping():
 # Autenticar al usuario
 def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
     user = get_user(username, db)
-    print (f"User: {user}")
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
         return False
     return user
-
-
 
 
 
@@ -119,8 +116,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 @app.post("/api/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(form_data.username, form_data.password, db)
-    if user:
-        print (f"User: {user.user}")
+
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -154,7 +150,6 @@ def get_grupos(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
-        print (payload)
         if username is None:
             raise credentials_exception
     except JWTError:
@@ -221,9 +216,7 @@ def siguiente_conductor(data: schemas.GrupoViaje, token: str = Depends(oauth2_sc
         .options(joinedload(models.Master.viaje).joinedload(models.TiposViaje.conductor))  # Cargar conductores
         .first()
     )
-    print (f"Ultimo viaje grupo: {ultimo_viaje_grupo.pk_viaje}, conductor: {ultimo_viaje_grupo.viaje.conductor.nombre}")
     siguiente_viaje = db.query(models.TiposViaje).filter(models.TiposViaje.id == ultimo_viaje_grupo.pk_viaje).first()
-    print (f"siguiente viaje: {siguiente_viaje.pk_id_conductor}")
     siguiente_conductor_tp = db.query(models.TiposViaje).filter(models.TiposViaje.id == siguiente_viaje.siguiente).first()
     siguiente_conductor = db.query(models.Conductores).filter(models.Conductores.id == siguiente_conductor_tp.pk_id_conductor).first()
     
@@ -249,7 +242,6 @@ def comprobar_fecha(data: schemas.MasterBase, token: str = Depends(oauth2_scheme
 
         # Obtener la fecha que viene en UTC
     fecha_utc = data.fecha
-    print ("from svelte:",data.fecha)
 
     # Obtener la fecha que viene en la zona horaria local    # Convertir a la zona horaria local (CET/CEST)
     zona_horaria = pytz.timezone("Europe/Madrid")
@@ -263,14 +255,7 @@ def comprobar_fecha(data: schemas.MasterBase, token: str = Depends(oauth2_scheme
         existe ["data"] ["grupo"] = data_existe.viaje.grupo.descripcion
         existe ["data"] ["conductor"] = data_existe.viaje.conductor.nombre
     else:
-        print ('No Existe')
         existe = {'existe': False}
-
-    # new_master = models.Master(**data.dict())
-    # db.add(new_master)
-    # db.commit()
-    #  print (f"Añadiendo viaje: {new_master.id}")
-
     
     return existe
 
@@ -322,7 +307,6 @@ async def borrar_dia (data: schemas.Fecha, token: str = Depends(oauth2_scheme), 
         raise credentials_exception
     # Buscar el registro con la fecha específica
     data.fecha += timedelta(hours=2)
-    print ("Borrando dia:", data.fecha.date())
     record = db.query(models.Master).filter(models.Master.fecha == data.fecha.date()).first()
     
     if not record:
@@ -350,7 +334,6 @@ async def actualizar_notas (data: schemas.FechaNota, token: str = Depends(oauth2
         raise credentials_exception
     # Buscar el registro con la fecha específica
     data.fecha += timedelta(hours=2)
-    print ("Actualizando Nota:", data.fecha.date())
     # Buscar el registro en la tabla 'Master' con la fecha específica
    
     record = db.query(models.Master).filter(models.Master.fecha == data.fecha.date()).first()
@@ -404,13 +387,11 @@ def read_conductores(token: str = Depends(oauth2_scheme), skip: int = 0, limit: 
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
-        print (payload)
         if username is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
 
-    print (skip, limit)
     conductores = db.query(models.Conductores).offset(skip).limit(limit).all()
     ultimos_viajes = (
         db.query(models.Master)

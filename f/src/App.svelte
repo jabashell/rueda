@@ -7,17 +7,14 @@
   import TestFecha from "./components/Test_Fecha.svelte";
   
   const apiUrl = import.meta.env.VITE_API_URL;
-  console.log('API URL', apiUrl);
   let name = '';
   let token = false
   $: showLogin = true;
   $: showSelectGrupo = false;
   $: grupo = 0;
-  $: console.log ('grupo', grupo);
 
   // Recuperar el token almacenado cuando el componente se carga
   onMount(() => {
-    console.log('Componente cargado, recuperando token...');
     token = readToken();
     
     if (token) {

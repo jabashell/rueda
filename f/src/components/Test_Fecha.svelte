@@ -6,7 +6,6 @@
     let date = new Date(); // Date
     const onchange = ({ detail }) => {
         dateValue = detail
-        console.log('onchange', detail);
     };
 
     function comprobar_fecha () {
@@ -24,7 +23,6 @@
             
         })
         .then(response => response.json())
-        .then(data => console.log('Comprobar fecha: ', data))
         .catch(error => console.error('Error:', error));
     }
 </script>

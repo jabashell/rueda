@@ -4,7 +4,6 @@
     import { onMount } from 'svelte';
     import { readToken, readUser, clearGroup } from '../utils_session.js';
     import SiguienteConductor from './SiguienteConductor.svelte';
-    import TablaViajes from './TablaViajes.svelte';
     
     const apiUrl = import.meta.env.VITE_API_URL;
     export let grupo = 0;
@@ -23,7 +22,6 @@
 
     onMount (async function viajes() {
         try {
-            console.log (({ 'grupo_id' : grupo, 'num_entradas': "3" })            )
             const response = await fetch(apiUrl + '/api/viajes', {
                 method: 'POST',
                 headers: {
@@ -36,11 +34,9 @@
                                 })
                 
             });
-            console.log ('Response', response);
             
             if (response.ok) {
                 datos_viajes = await response.json();
-                console.log('Datos viaje', datos_viajes);
             } else {
                 alert('Login failed');
             }
@@ -52,7 +48,6 @@
     });
 
     function actualizar_notas(viajeSeleccionado) {
-        console.log (({ 'grupo_id' : grupo, 'num_entradas': "3" })            )
         fetch(apiUrl + '/api/actualizar_notas', {
             method: 'POST',
             headers: {
@@ -66,13 +61,11 @@
             
         })
         .then(response => response.json())
-        .then(data => console.log('Data:', data))
         .catch(error => console.error('Error:', error))
     };
 
     async function recargaViaje() {
         try {
-            console.log ('recargando viaje'            )
             const response = await fetch(apiUrl + '/api/viajes', {
                 method: 'POST',
                 headers: {
@@ -85,12 +78,10 @@
                                 })
                 
             });
-            console.log ('Response', response);
             
             if (response.ok) {
                 showSiguienteConductor = false;
                 datos_viajes = await response.json();
-                console.log('Datos viaje', datos_viajes);
                 showSiguienteConductor = true;
             } else {
                 alert('Login failed');
@@ -108,11 +99,9 @@
       clearGroup();
       showSelectGrupo = true;
       grupo = 0;
-      console.log('Grupo:', grupo, 'showSelectGrupo', showSelectGrupo);
     }
     function handleCustomEvent(event) {
-      console.log(event.detail.message); // 'Hola desde el hijo!'
-      setTimeout (recargaViaje, 1000);
+      setTimeout (recargaViaje, 100);
     }
 
         // Función para mostrar un mensaje al hacer click en una fila
@@ -121,9 +110,7 @@
       toggle ();
     }
     function actualizarViaje(viajeSeleccionado, toggleOff){
-      console.log('Actualizando viaje:', viajeSeleccionado);
       actualizar_notas (viajeSeleccionado);
-      // TODO : Actualizar el viaje en el backend y actualizar los datos en la variable datos_viajes
       toggleOff();
     }
 

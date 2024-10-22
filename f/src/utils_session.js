@@ -3,11 +3,9 @@
     const token = readToken();
     const apiUrl = import.meta.env.VITE_API_URL;
     if (!token) {
-        console.log("No hay token en el storage");
       return false;
     }
     // comprobar el token contra el backend
-    console.log ("Check Token: Solicitando estado del token");  // Enviar solicitud al backend para comprobar el token
 
       let response = await fetch(apiUrl + '/api/token_status', {
               method: 'GET',
@@ -18,10 +16,8 @@
           })
           
       if (response.ok) {
-          console.log("Check Token: Token válido");
           return true;
         } else {
-        console.log("Check Token: Token INválido");
           clearToken();
           clearUser ();
           return false;  // El token es inválido, volver a la pantalla de login

@@ -13,7 +13,6 @@
     let date = new Date(); // Date
     const onchange = ({ detail }) => {
         dateValue = detail
-        console.log('onchange', detail);
     };
     let data;
     
@@ -49,11 +48,9 @@
                                 })
                 
             });
-            console.log ('Response', response);
             
             if (response.ok) {
                 datos_conductor = await response.json();
-                console.log('Datos conductor', datos_conductor);
             } else {
                 alert('Login failed');
             }
@@ -87,7 +84,6 @@
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Comprobar fecha: ', data)
             /*
             2.- Si hay conductor asignado informar
             */
@@ -101,8 +97,6 @@
 
             } else {
                 /* El día esta libre por tanto lo puedo asignar */
-                console.log ('datos viaje -> ', datos_viaje)
-            
                 asignar_conductor (datos_viaje)
                 handleRender ();
 
@@ -114,7 +108,6 @@
         /*
         3.- Si no hay conductor asignado, entonces asignar
         */
-        console.log('Asignar conductor a', dateValue, datos_conductor);
     }
 
     function asignar_conductor(datos_viaje) {
@@ -130,7 +123,6 @@
             
         })
         .then(response => response.json())
-        .then(data => console.log(data))
         .catch(error => console.error('Error:', error));
         cargando_ext = false;
     }
@@ -141,7 +133,6 @@
         const datos_viaje = { "fecha": dateValue.toISOString(),
                               "pk_viaje": datos_conductor.id_siguiente_conductor,
                             }
-        console.log("Item deleted!");
         asignar_conductor (datos_viaje);
         isDialogOpen = false;  // Cerrar el diálogo después de la acción
     };
@@ -155,7 +146,6 @@
 
     function btn_borrar_dia() {
         cargando = true;
-        console.log('cargando', cargando);
         /* 
         1.- Comprobar que en ese día no hay ningun conductor asignado
         */
@@ -173,8 +163,6 @@
         .then(response => response.json())
         .then(data => {
             setTimeout(handleRender, 100);
-
-            console.log('Resultado del borrado: ', data)
         })
         .catch(error => console.error('Error:', error));
     }
@@ -226,11 +214,9 @@
       <MostrarModal 
       open={isDialogOpen}     
       onClose={closeDialog}    
-      onConfirm={handleDelete} 
       dialogTitle={dialogTitle}   
       dialogContent={dialogContent}
       persistent=true
-      messageConfirm="Reasignar"
     />
   </div>
 

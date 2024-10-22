@@ -24,7 +24,6 @@
             
             if (response.ok) {
                 grupos = await response.json();
-                console.log('Grupos', grupos);
             } else {
                 alert('Login failed');
             }
@@ -36,7 +35,6 @@
     })
 
     function handleClick(grupoId) {
-        console.log('Grupo seleccionado:', grupoId);
         grupo = grupoId;
         saveGroup (grupoId);  // Guarda el grupo seleccionado en la sesión
         showSelectGrupo = false;

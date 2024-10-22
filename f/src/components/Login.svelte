@@ -18,13 +18,13 @@
         checkToken().then(resultado => {
             estado_token = resultado;
         });
-        console.log('Login: Comprobando token de sesión...', estado_token);
-        if (estado_token) {
-            console.log('Login: Token válido');
+        // console.log('Login: Comprobando token de sesión...', estado_token);
+        // if (estado_token) {
+        //     console.log('Login: Token válido');
 
-        } else {
-            console.log('Login: Token inválido');
-        }
+        // } else {
+        //     console.log('Login: Token inválido');
+        // }
     });
 
     async function login() {
@@ -32,7 +32,7 @@
         const f_password = password;
 
         showMessageLogin = false;
-        console.log('LOGIN - username: ', f_username, 'password: ', f_password, 'showMessageLogin', showMessageLogin);
+        // console.log('LOGIN - username: ', f_username, 'password: ', f_password, 'showMessageLogin', showMessageLogin);
 
         // Crear el cuerpo codificado con URLSearchParams
         const formBody = new FormData();
@@ -48,7 +48,6 @@
         const data = await response.json();
         saveToken (data);
         saveUser (f_username);
-        console.log('data: ', data);
 
         showMessageLogin = false;
         if (response.ok) {
