@@ -51,6 +51,25 @@
         }
     });
 
+    function actualizar_notas(viajeSeleccionado) {
+        console.log (({ 'grupo_id' : grupo, 'num_entradas': "3" })            )
+        fetch(apiUrl + '/api/actualizar_notas', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": token.token_type + " " + token.access_token
+            },
+            body: JSON.stringify({ 
+                            "fecha": viajeSeleccionado.fecha,
+                            "notas_viaje": viajeSeleccionado.notas_viaje,
+                            })
+            
+        })
+        .then(response => response.json())
+        .then(data => console.log('Data:', data))
+        .catch(error => console.error('Error:', error))
+    };
+
     async function recargaViaje() {
         try {
             console.log ('recargando viaje'            )
@@ -103,6 +122,7 @@
     }
     function actualizarViaje(viajeSeleccionado, toggleOff){
       console.log('Actualizando viaje:', viajeSeleccionado);
+      actualizar_notas (viajeSeleccionado);
       // TODO : Actualizar el viaje en el backend y actualizar los datos en la variable datos_viajes
       toggleOff();
     }
