@@ -98,8 +98,7 @@
             } else {
                 /* El día esta libre por tanto lo puedo asignar */
                 asignar_conductor (datos_viaje)
-                handleRender ();
-
+                setTimeout(handleRender, 500);
             }    
         })
         .catch(error => console.error('Error:', error));
@@ -162,7 +161,7 @@
         })
         .then(response => response.json())
         .then(data => {
-            setTimeout(handleRender, 1000);
+            setTimeout(handleRender, 500);
         })
         .catch(error => console.error('Error:', error));
     }
