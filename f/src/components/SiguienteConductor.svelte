@@ -162,7 +162,7 @@
         })
         .then(response => response.json())
         .then(data => {
-            setTimeout(handleRender, 500);
+            setTimeout(handleRender, 1000);
         })
         .catch(error => console.error('Error:', error));
     }
