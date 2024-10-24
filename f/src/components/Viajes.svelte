@@ -61,7 +61,11 @@
             
         })
         .then(response => response.json())
+        .then(() => {
+          datos_viajes = datos_viajes
+        })
         .catch(error => console.error('Error:', error))
+
     };
 
     async function recargaViaje() {
@@ -139,7 +143,7 @@
             </thead>
             <tbody>
               {#each datos_viajes as viaje (viaje.fecha)}
-              <tr on:click={() => mostrarMensaje(viaje, toggle)}>
+              <tr on:click={() => mostrarMensaje(viaje, toggle)} class={viaje.notas_viaje ? "bg-blue-100" : ""}>
                 <td class="border border-gray-500 px-4 py-2">{viaje.fecha}</td>
                 <td class="border border-gray-500 px-4 py-2">{viaje.nombre_conductor}</td>
                 <td class="border border-gray-500 px-4 py-2">{viaje.nombre_conductor_mini}</td>
